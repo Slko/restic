@@ -33,8 +33,11 @@ func NewRetryBackend(be restic.Backend, maxTries int, report func(string, error,
 }
 
 func (be *RetryBackend) retry(ctx context.Context, msg string, f func() error) error {
+	b := backoff.NewExponentialBackOff()
+	b.MaxInterval = 10 * time.Minute
+	b.MaxElapsedTime = 0
 	err := backoff.RetryNotify(f,
-		backoff.WithContext(backoff.WithMaxRetries(backoff.NewExponentialBackOff(), uint64(be.MaxTries)), ctx),
+		backoff.WithContext(b, ctx),
 		func(err error, d time.Duration) {
 			if be.Report != nil {
 				be.Report(msg, err, d)
