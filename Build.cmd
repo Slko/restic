@@ -1,0 +1,6 @@
+@echo off
+
+echo Building for Windows...
+go run build.go --goos windows --goarch amd64
+echo Building for Linux...
+go run build.go --goos linux --goarch amd64
